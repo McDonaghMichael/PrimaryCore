@@ -34,8 +34,23 @@ class DatabaseManager {
             coins INT DEFAULT 0
         )");
 
+        $this->db->exec("CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            scoreboard BOOLEAN DEFAULT 1,
+            announcements BOOLEAN DEFAULT 1
+        )");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS prison_ranks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            mine_rank INT DEFAULT 0,
+            prestige_level INT DEFAULT 0
+        )");
+
     }
 
+    
     public function getDatabase(): SQLite3 {
         return $this->db;
     }

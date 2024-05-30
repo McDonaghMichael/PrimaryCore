@@ -1,6 +1,8 @@
 <?php
 
 namespace PrimaryCore\ranks;
+use pocketmine\utils\TextFormat as TF;
+
 
 class Rank {
     
@@ -40,15 +42,15 @@ class Rank {
     }
 
     public function getFormat(): string {
-        return $this->format;
+        return TF::RESET . $this->format . TF::RESET;
     }
 
     public function getChatFormat(): string {
-        return $this->chatFormat;
+        return TF::RESET . $this->chatFormat;
     }
     
     public function getNameTagFormat(): string {
-        return $this->nameTagFormat; // Getter for name tag format
+        return TF::RESET . $this->nameTagFormat; // Getter for name tag format
     }
 
     public function getPermissions(): array {

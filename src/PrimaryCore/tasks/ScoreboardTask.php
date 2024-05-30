@@ -49,13 +49,21 @@ class ScoreboardTask extends Task
         foreach (Main::getInstance()->getServer()->getOnlinePlayers() as $player) {
             if ($player instanceof Player) {
                 $scoreboard = Scoreboard::create($player, "ReactiveMC");
-
+                $scoreboard->remove();
                 $scoreboard->spawn();
-                     
-                foreach ($this->defaultScoreboard as $index => $line) {
-                    $line = str_replace("%coins%", Main::getInstance()->getEconomyManager()->getCoins($player), $line);
-                    $scoreboard->setLine($index, $line);
+                if(Main::getInstance()->getUserManager()->isScoreboardEnabled($player->getName())){
+                         
+                    foreach ($this->defaultScoreboard as $index => $line) {
+                        $line = str_replace("%coins%", Main::getInstance()->getEconomyManager()->getCoins($player), $line);
+                        $line = str_replace("%rank%", Main::getInstance()->getRankManager()->getRankForPlayer($player)->getFormat(), $line);
+                        $scoreboard->setLine($index, $line);
+                    }
+                }else{
+
+$scoreboard->remove();
+
                 }
+                
             }
         }
 

@@ -15,6 +15,7 @@ use PrimaryCore\database\UserManager;
 use PrimaryCore\economy\EconomyManager;
 use PrimaryCore\tasks\ScoreboardTask;
 use PrimaryCore\tasks\BroadcastTask;
+use PrimaryCore\mines\MinesManager;
 
 class Main extends PluginBase implements Listener {
 
@@ -47,6 +48,8 @@ class Main extends PluginBase implements Listener {
 
     private $economyManager;
 
+    private $minesManager;
+
     public function onLoad(): void {
         self::$instance = $this;
     }
@@ -62,6 +65,7 @@ class Main extends PluginBase implements Listener {
         $this->kitsManager = new KitsManager();
         $this->economyManager = new EconomyManager();
         $this->userManager = new UserManager($this->databaseManager);
+        $this->minesManager = new MinesManager();
         $this->loadTasks();
     }
 
@@ -103,6 +107,10 @@ class Main extends PluginBase implements Listener {
 
     public function getEconomyManager(): EconomyManager {
         return $this->economyManager;
+    }
+
+    public function getMinesManager(): MinesManager {
+        return $this->minesManager;
     }
 
     public function loadTasks(): void {

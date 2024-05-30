@@ -6,10 +6,11 @@ use PrimaryCore\Main;
 use PrimaryCore\database\DatabaseManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\Player;
-
+use pocketmine\utils\TextFormat as TF;
 class RankManager {
 
     const OWNER = 100000;
+    const MANAGER = 999999;
     const ADMIN = 90;
     const HEAD_DEVELOPER = 80;
     const DEVELOPER = 70;
@@ -37,7 +38,8 @@ class RankManager {
         $this->addRank(new Rank("Admin", RankManager::ADMIN, "{GOLD}{BOLD}Admin", "> {rank} {username} - {msg}", "{GOLD}[Admin]", ["admin.cmd"]));
         $this->addRank(new Rank("Nitro", RankManager::NITRO, "{GOLD}{BOLD}Nitro", "> {rank} {username} - {msg}", "{GOLD}[Nitros]", ["admin.cmd"]));
         $this->addRank(new Rank("Developer", RankManager::DEVELOPER, "{GOLD}{BOLD}Dev", "> {rank} {username} - {msg}", "{GOLD}[Dev]", ["admin.cmd"]));
-        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}Inmate", "> {rank} {username} - {msg}", "{GOLD}[Inamte]", ["admin.cmd"]));
+        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}INMATE", "> [{mine}][{prestige}] {rank} {username} - {msg}", "{GOLD}[INAMTE]", ["admin.cmd"]));
+        $this->addRank(new Rank("Manager", RankManager::MANAGER, "{BOLD}{DARK_PURPLE}MANAGER", "> {rank} {LIGHT_PURPLE){username} {GRAY}- {YELLOW}{msg}", "{BOLD}{DARK_PURPLE}[MANAGER]", ["admin.cmd"]));
         $this->addRank(new Rank("Builder", RankManager::BUILDER, "{GOLD}{BOLD}Builder", "> {rank} {username} - {msg}", "{GOLD}[Builder]", ["admin.cmd"]));
         $this->addRank(new Rank("Head Dev", RankManager::HEAD_DEVELOPER, "{GOLD}{BOLD}Head Dev", "> {rank} {username} - {msg}", "{GOLD}[HDEV]", ["admin.cmd"]));
 
@@ -64,11 +66,11 @@ class RankManager {
         }
     
         $format = $rank->getChatFormat();
-        $format = str_replace("{rank}", $rank->getName(), $format);
+        $format = str_replace("{rank}", $rank->getFormat(), $format);
         $format = str_replace("{username}", $player->getName(), $format);
         $format = str_replace("{msg}", $message, $format);
-        $format = Main::getInstance()->getTranslateManager()->replaceColorPlaceholders($format);
-        $format = Main::getInstance()->getTranslateManager()->replaceFormattingPlaceholders($format);
+        $format = str_replace("{mine}", Main::getInstance()->getUserManager()->rankNumberToLetter(Main::getInstance()->getUserManager()->getPlayerMineRank($player->getName())), $format);
+        $format = str_replace("{prestige}", "1", $format);
         return $format;
     }
 
@@ -167,7 +169,7 @@ $nextRank = $maxRank > 0 ? $maxRank : 0;
     
     
 
-    private function getRankForPlayer($player): ?Rank {
+    public function getRankForPlayer($player): ?Rank {
         // Get the player's username
         $username = $player->getName();
     
@@ -186,6 +188,31 @@ $nextRank = $maxRank > 0 ? $maxRank : 0;
     
         // If the player has no server rank or not found in the database, return the default rank "Inmate"
         return $this->getRankById(self::INMATE);
+    }
+    
+    public function getRanksForPlayer($player): array {
+        $username = $player->getName();
+        $db = $this->databaseManager->getDatabase();
+    
+        // Query to get all ranks associated with the player
+        $stmt = $db->prepare("SELECT rank FROM server_ranks WHERE username = :username");
+        $stmt->bindValue(":username", $username, SQLITE3_TEXT);
+        $result = $stmt->execute();
+    
+        $ranks = [];
+    
+        // Fetch all rank IDs and get corresponding Rank objects
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            if (isset($row['rank'])) {
+                $rank = $this->getRankById((int)$row['rank']);
+                if ($rank !== null) {
+                    $ranks[] = $rank;
+                }
+            }
+        }
+        $stmt->close();
+    
+        return $ranks;
     }
     
     
