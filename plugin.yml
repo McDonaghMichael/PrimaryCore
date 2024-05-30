@@ -1,0 +1,11 @@
+name: PrimaryCore
+main: PrimaryCore\Main
+version: 0.2.3
+api: 5.0.0
+permissions:
+  global.command:
+    description: Commands can be used by everyone
+    default: true
+  ban.command:
+    description: Commands can be used by everyone
+    default: op
