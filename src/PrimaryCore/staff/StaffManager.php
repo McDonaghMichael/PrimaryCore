@@ -2,7 +2,7 @@
 namespace PrimaryCore\staff;
 
 use pocketmine\plugin\Plugin;
-use PrimaryCore\staff\sub\commands\BanCommand;
+use PrimaryCore\staff\commands\BanCommand;
 use PrimaryCore\Main;
 
 class StaffManager{

@@ -1,6 +1,6 @@
 <?php
 
-namespace PrimaryCore\staff\sub\commands;
+namespace PrimaryCore\staff\commands;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;

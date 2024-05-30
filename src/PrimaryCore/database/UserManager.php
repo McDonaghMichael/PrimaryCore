@@ -9,14 +9,30 @@ class UserManager {
     private DatabaseManager $databaseManager;
 
     public const MINE_RANK_A = 0;
+
     public const MINE_RANK_B = 1;
+    
     public const MINE_RANK_C = 2;
     public const MINE_RANK_D = 3;
     public const MINE_RANK_E = 4;
     public const MINE_RANK_Z = 25;
 
+    private const RANK_UP_COSTS = [
+        self::MINE_RANK_A => 0,
+        self::MINE_RANK_B => 2000,
+        self::MINE_RANK_C => 3000,
+        self::MINE_RANK_D => 4000,
+        self::MINE_RANK_E => 5000,
+        // Define costs up to rank Z
+        self::MINE_RANK_Z => 26000
+    ];
+
     public function __construct(DatabaseManager $databaseManager) {
         $this->databaseManager = $databaseManager;
+    }
+
+    public function getRankUpCost(int $rank): int {
+        return self::RANK_UP_COSTS[$rank] ?? 0;
     }
 
     public function playerExists(string $username): bool {
@@ -124,5 +140,29 @@ class UserManager {
             return (int)$row['mine_rank'];
         }
     }
+
+    public function setPlayerMineRank(string $username, int $rank): void {
+        $db = $this->databaseManager->getDatabase();
+        $stmt = $db->prepare("UPDATE prison_ranks SET mine_rank = :rank WHERE username = :username");
+        $stmt->bindValue(":rank", $rank, SQLITE3_INTEGER);
+        $stmt->bindValue(":username", $username, SQLITE3_TEXT);
+        $stmt->execute();
+        $stmt->close();
+    }
     
+    public function getPlayerGangName(string $username): string {
+        $db = $this->databaseManager->getDatabase();
+        
+        // Prepare and execute SQL query to fetch the gang name
+        $stmt = $db->prepare("SELECT gang_name FROM players WHERE username = :username");
+        $stmt->bindValue(":username", $username, SQLITE3_TEXT);
+        $result = $stmt->execute();
+    
+        // Fetch the result row
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        $stmt->close();
+    
+        // Check if the row exists and return the gang name or an empty string
+        return $row['gang_name'] ?? '';
+    }
 }

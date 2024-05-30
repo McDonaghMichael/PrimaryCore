@@ -18,7 +18,8 @@ class DatabaseManager {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             server_Rank INT DEFAULT 0,
-            score INT DEFAULT 0
+            score INT DEFAULT 0,
+            gang_name TEXT DEFAULT NULL
         )");
 
 
@@ -46,6 +47,16 @@ class DatabaseManager {
             username TEXT NOT NULL,
             mine_rank INT DEFAULT 0,
             prestige_level INT DEFAULT 0
+            
+        )");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS gangs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gang_name TEXT NOT NULL,
+            description TEXT,
+            reputation INT DEFAULT 0,
+            public INT DEFAULT 0,
+            leader TEXT
         )");
 
     }

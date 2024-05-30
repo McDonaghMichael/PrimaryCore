@@ -26,6 +26,6 @@ class onJoinListener implements Listener
         
         // Set join message
         $event->setJoinMessage(Main::getInstance()->getTranslateManager()->translate('onJoin', ['USERNAME' => $playerName]));
-       
+       Main::$bar->addPlayer($player);
     }
 }

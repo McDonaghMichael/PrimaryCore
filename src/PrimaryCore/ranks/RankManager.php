@@ -7,6 +7,10 @@ use PrimaryCore\database\DatabaseManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat as TF;
+use PrimaryCore\ranks\commands\AddRankCommand;
+use PrimaryCore\ranks\commands\RemoveRankCommand;
+use PrimaryCore\ranks\commands\ResetRanksCommand;
+
 class RankManager {
 
     const OWNER = 100000;
@@ -30,6 +34,11 @@ class RankManager {
         $this->plugin = $plugin;
         $this->databaseManager = Main::getInstance()->getDatabaseManager();
         $this->setupRanks();
+        Main::getInstance()->getServer()->getCommandMap()->registerAll("PrimaryCore", [
+            new AddRankCommand("addrank", "Permet d'aller au spawn", "/addrank"),
+            new RemoveRankCommand("removerank", "Permet d'aller au spawn", "/removerank"),
+            new ResetRanksCommand("resetrank", "Permet d'aller au spawn", "/resetranks"),
+        ]);
     }
 
     private function setupRanks(): void {
@@ -38,7 +47,7 @@ class RankManager {
         $this->addRank(new Rank("Admin", RankManager::ADMIN, "{GOLD}{BOLD}Admin", "> {rank} {username} - {msg}", "{GOLD}[Admin]", ["admin.cmd"]));
         $this->addRank(new Rank("Nitro", RankManager::NITRO, "{GOLD}{BOLD}Nitro", "> {rank} {username} - {msg}", "{GOLD}[Nitros]", ["admin.cmd"]));
         $this->addRank(new Rank("Developer", RankManager::DEVELOPER, "{GOLD}{BOLD}Dev", "> {rank} {username} - {msg}", "{GOLD}[Dev]", ["admin.cmd"]));
-        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}INMATE", "> [{mine}][{prestige}] {rank} {username} - {msg}", "{GOLD}[INAMTE]", ["admin.cmd"]));
+        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}INMATE", "> [{gang}] [{mine}][{prestige}] {rank} {username} - {msg}", "{GOLD}[INAMTE]", ["admin.cmd"]));
         $this->addRank(new Rank("Manager", RankManager::MANAGER, "{BOLD}{DARK_PURPLE}MANAGER", "> {rank} {LIGHT_PURPLE){username} {GRAY}- {YELLOW}{msg}", "{BOLD}{DARK_PURPLE}[MANAGER]", ["admin.cmd"]));
         $this->addRank(new Rank("Builder", RankManager::BUILDER, "{GOLD}{BOLD}Builder", "> {rank} {username} - {msg}", "{GOLD}[Builder]", ["admin.cmd"]));
         $this->addRank(new Rank("Head Dev", RankManager::HEAD_DEVELOPER, "{GOLD}{BOLD}Head Dev", "> {rank} {username} - {msg}", "{GOLD}[HDEV]", ["admin.cmd"]));
@@ -70,6 +79,7 @@ class RankManager {
         $format = str_replace("{username}", $player->getName(), $format);
         $format = str_replace("{msg}", $message, $format);
         $format = str_replace("{mine}", Main::getInstance()->getUserManager()->rankNumberToLetter(Main::getInstance()->getUserManager()->getPlayerMineRank($player->getName())), $format);
+        $format = str_replace("{gang}", Main::getInstance()->getUserManager()->getPlayerGangName($player->getName()), $format);
         $format = str_replace("{prestige}", "1", $format);
         return $format;
     }

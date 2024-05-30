@@ -13,14 +13,18 @@ use PrimaryCore\utils\translate\TranslateManager;
 use PrimaryCore\database\DatabaseManager;
 use PrimaryCore\database\UserManager;
 use PrimaryCore\economy\EconomyManager;
+use PrimaryCore\gangs\GangManager;
 use PrimaryCore\tasks\ScoreboardTask;
 use PrimaryCore\tasks\BroadcastTask;
+use PrimaryCore\tasks\BossBarTask;
 use PrimaryCore\mines\MinesManager;
-
+use xenialdan\apibossbar\BossBar;
 class Main extends PluginBase implements Listener {
 
     /** @var self */
     private static $instance;
+
+    public static $bar;
 
     /** @var CommandManager */
     private $commandManager;
@@ -49,6 +53,8 @@ class Main extends PluginBase implements Listener {
     private $economyManager;
 
     private $minesManager;
+    private $gangManager;
+
 
     public function onLoad(): void {
         self::$instance = $this;
@@ -56,6 +62,7 @@ class Main extends PluginBase implements Listener {
 
     public function onEnable(): void {
         $dbPath = $this->getDataFolder() . "database.db";
+        self::$bar = new BossBar();
         $this->databaseManager = new DatabaseManager($dbPath);
         $this->commandManager = new CommandManager($this);
         $this->listenerManager = new ListenerManager($this);
@@ -66,6 +73,7 @@ class Main extends PluginBase implements Listener {
         $this->economyManager = new EconomyManager();
         $this->userManager = new UserManager($this->databaseManager);
         $this->minesManager = new MinesManager();
+        $this->gangManager = new GangManager();
         $this->loadTasks();
     }
 
@@ -113,9 +121,14 @@ class Main extends PluginBase implements Listener {
         return $this->minesManager;
     }
 
+    public function getGangManager(): GangManager {
+        return $this->gangManager;
+    }
+
     public function loadTasks(): void {
         Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BroadcastTask(), 20, 20);
         Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new ScoreboardTask(), 20, 20);
+        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BossBarTask(), 20, 20);
 
 
     }

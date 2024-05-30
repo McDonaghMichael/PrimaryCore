@@ -6,6 +6,7 @@ use PrimaryCore\Main;
 use PrimaryCore\commands\sub\ExampleCommand;
 use PrimaryCore\commands\sub\KitCommand;
 use PrimaryCore\commands\sub\SettingsCommand;
+use PrimaryCore\commands\sub\RankupCommand;
 use PrimaryCore\commands\sub\MinesCommand;
 
 class CommandManager{
@@ -25,6 +26,7 @@ class CommandManager{
                 new KitCommand("kit", "Permet d'aller au spawn", "/kit"),
                 new SettingsCommand("settings", "Permet d'aller au spawn", "/settings"),
                 new MinesCommand("mines", "Permet d'aller au spawn", "/mines"),
+                new RankupCommand("rankup", "Permet d'aller au spawn", "/rankup"),
             ]);
         
     }
