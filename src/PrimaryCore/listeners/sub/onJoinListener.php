@@ -6,7 +6,7 @@ use PrimaryCore\Main;
 use PrimaryCore\database\UserManager;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
-
+use pocketmine\Player\Player;
 
 class onJoinListener implements Listener
 {
@@ -27,5 +27,6 @@ class onJoinListener implements Listener
         // Set join message
         $event->setJoinMessage(Main::getInstance()->getTranslateManager()->translate('onJoin', ['USERNAME' => $playerName]));
        Main::$bar->addPlayer($player);
+       Main::getInstance()->getRankManager()->loadPermissions($player);
     }
 }

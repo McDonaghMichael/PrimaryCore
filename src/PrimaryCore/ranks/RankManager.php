@@ -5,11 +5,14 @@ namespace PrimaryCore\ranks;
 use PrimaryCore\Main;
 use PrimaryCore\database\DatabaseManager;
 use pocketmine\plugin\Plugin;
-use pocketmine\Player;
+use pocketmine\Player\Player;
+
 use pocketmine\utils\TextFormat as TF;
 use PrimaryCore\ranks\commands\AddRankCommand;
 use PrimaryCore\ranks\commands\RemoveRankCommand;
 use PrimaryCore\ranks\commands\ResetRanksCommand;
+use pocketmine\permission\PermissionAttachment;
+use pocketmine\permission\PermissionManager;
 
 class RankManager {
 
@@ -27,6 +30,8 @@ class RankManager {
 
     /** @var array */
     private $ranks = [];
+
+    private $attachments = [];
 
     private $databaseManager;
 
@@ -47,12 +52,46 @@ class RankManager {
         $this->addRank(new Rank("Admin", RankManager::ADMIN, "{GOLD}{BOLD}Admin", "> {rank} {username} - {msg}", "{GOLD}[Admin]", ["admin.cmd"]));
         $this->addRank(new Rank("Nitro", RankManager::NITRO, "{GOLD}{BOLD}Nitro", "> {rank} {username} - {msg}", "{GOLD}[Nitros]", ["admin.cmd"]));
         $this->addRank(new Rank("Developer", RankManager::DEVELOPER, "{GOLD}{BOLD}Dev", "> {rank} {username} - {msg}", "{GOLD}[Dev]", ["admin.cmd"]));
-        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}INMATE", "> [{gang}] [{mine}][{prestige}] {rank} {username} - {msg}", "{GOLD}[INAMTE]", ["admin.cmd"]));
-        $this->addRank(new Rank("Manager", RankManager::MANAGER, "{BOLD}{DARK_PURPLE}MANAGER", "> {rank} {LIGHT_PURPLE){username} {GRAY}- {YELLOW}{msg}", "{BOLD}{DARK_PURPLE}[MANAGER]", ["admin.cmd"]));
+        $this->addRank(new Rank("Inmate", RankManager::INMATE, "{GOLD}{BOLD}INMATE", "{DARK_GRAY}> {WHITE}[{GRAY}{gang}{WHITE}] [{GRAY}{mine}{WHITE}][{GRAY}{prestige}{WHITE}] {rank} {username} - {msg}", "{GOLD}[INMATE]", ["admin.cmd"]));
+        $this->addRank(new Rank("Manager", RankManager::MANAGER, "{BOLD}{DARK_PURPLE}MANAGER", "> {rank} {LIGHT_PURPLE){username} {GRAY}- {YELLOW}{msg}", "{BOLD}{DARK_PURPLE}[MANAGER]", ["admin.command"]));
         $this->addRank(new Rank("Builder", RankManager::BUILDER, "{GOLD}{BOLD}Builder", "> {rank} {username} - {msg}", "{GOLD}[Builder]", ["admin.cmd"]));
         $this->addRank(new Rank("Head Dev", RankManager::HEAD_DEVELOPER, "{GOLD}{BOLD}Head Dev", "> {rank} {username} - {msg}", "{GOLD}[HDEV]", ["admin.cmd"]));
 
-        // Add more ranks as needed
+    }
+
+    public function loadPermissions(Player $player): void {
+        $this->removePermissions($player);
+        $ranks = $this->getRanksForPlayer($player);
+        foreach ($ranks as $rank) {
+            $permissions = $rank->getPermissions();
+            if ($permissions !== null) {
+                if (!isset($this->attachments[$player->getName()])) {
+                    $this->attachments[$player->getName()] = $player->addAttachment(Main::getInstance());
+                }
+                $attachment = $this->attachments[$player->getName()];
+                foreach ($permissions as $permission) {
+                    $attachment->setPermission($permission, true);
+                }
+            }
+        }
+    }
+
+    public function removePermissions(Player $player): void {
+        if (isset($this->attachments[$player->getName()])) {
+            $attachment = $this->attachments[$player->getName()];
+            $ranks = $this->getRanksForPlayer($player);
+            foreach ($ranks as $rank) {
+                $permissions = $rank->getPermissions();
+                if ($permissions !== null) {
+                    foreach ($permissions as $permission) {
+                        $attachment->unsetPermission($permission);
+                    }
+                }
+            }
+            $player->removeAttachment($attachment);
+            unset($this->attachments[$player->getName()]);
+
+        }
     }
 
     public function addRank(Rank $rank): void {
@@ -116,7 +155,15 @@ class RankManager {
     }
     
     public function removeRankFromUser($player, int $rankId): void {
-        $username = $player->getName();
+        // Determine the username based on the type of $player parameter
+        if (is_string($player)) {
+            $username = $player;
+        } elseif ($player instanceof Player) {
+            $username = $player->getName();
+        } else {
+            throw new \InvalidArgumentException('Parameter $player must be either a string or an instance of Player');
+        }
+    
         $db = $this->databaseManager->getDatabase();
     
         // Begin a transaction
@@ -139,26 +186,19 @@ class RankManager {
     
             if ($currentRank === $rankId) {
                 // Get the next highest rank
-                // Get the next highest rank
-                // Prepare the SQL query
-$stmt = $db->prepare("SELECT MAX(rank) FROM server_ranks WHERE username = :username");
-$stmt->bindValue(":username", $username, SQLITE3_TEXT);
-
-// Execute the query
-$result = $stmt->execute();
-
-// Fetch the result row by row
-$maxRank = 0; // Default value if no rank is found
-while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-    $maxRank = (int)$row['MAX(rank)'];
-}
-
-// Close the statement
-$stmt->close();
-
-// Set the next rank to the maximum rank found or 0 if no rank is found
-$nextRank = $maxRank > 0 ? $maxRank : 0;
-
+                $stmt = $db->prepare("SELECT MAX(rank) FROM server_ranks WHERE username = :username");
+                $stmt->bindValue(":username", $username, SQLITE3_TEXT);
+                $result = $stmt->execute();
+                $maxRank = 0; // Default value if no rank is found
+    
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                    $maxRank = (int)$row['MAX(rank)'];
+                }
+    
+                $stmt->close();
+    
+                // Set the next rank to the maximum rank found or 0 if no rank is found
+                $nextRank = $maxRank > 0 ? $maxRank : 0;
     
                 // Update the user's server_Rank to the next highest rank or 0 if no next rank
                 $stmt = $db->prepare("UPDATE players SET server_Rank = :nextRank WHERE username = :username");
@@ -176,6 +216,7 @@ $nextRank = $maxRank > 0 ? $maxRank : 0;
             throw $e; // Rethrow the exception for handling by the caller
         }
     }
+    
     
     
 

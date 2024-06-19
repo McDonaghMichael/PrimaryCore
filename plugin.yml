@@ -6,6 +6,12 @@ permissions:
   global.command:
     description: Commands can be used by everyone
     default: true
+  global.kit:
+    description: Kits can be used by everyone
+    default: true
   ban.command:
+    description: Commands can be used by everyone
+    default: op
+  admin.command:
     description: Commands can be used by everyone
     default: op

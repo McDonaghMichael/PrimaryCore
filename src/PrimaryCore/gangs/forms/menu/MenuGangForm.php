@@ -17,21 +17,41 @@ use pocketmine\player\Player;
 use pocketmine\utils\TextFormat as TF;
 use PrimaryCore\Main;
 
+use PrimaryCore\gangs\forms\manage\ManageGangForm;
+use PrimaryCore\gangs\forms\stats\StatsGangForm;
+use PrimaryCore\gangs\forms\administrative\AdministrativeGangForm;
+
 class MenuGangForm {
 
     public function load(Player $player): MenuForm {
 
         return new MenuForm(
-			TF::BOLD . "GANG MENU", /* title of the form */
-			"Please choose an option", /* body text, shown above the menu options */
+			TF::BOLD . "GANG MENU",
+			"Please choose an option",
 			[
-				/* menu option with no icon */
-				new MenuOption("Stats\n" . TF::ITALIC . TF::GRAY . "Tap for more..."),
-				new MenuOption("Manage Members\n" . TF::ITALIC . TF::GRAY . "Tap for more..."),
-				new MenuOption("Administrative\n" . TF::ITALIC . TF::GRAY . "Tap for more...")
+				new MenuOption("Stats\n" . TF::ITALIC . TF::DARK_GRAY . "Tap for more..."),
+				new MenuOption("Manage Members\n" . TF::ITALIC . TF::DARK_GRAY . "Tap for more..."),
+				new MenuOption("Administrative\n" . TF::ITALIC . TF::DARK_GRAY . "Tap for more...")
 
 			],
             function(Player $submitter, int $selected) : void{
+                switch($selected){
+                    case 0:
+                        $gangForm = new StatsGangForm();
+                        $form = $gangForm->load($submitter);
+                        $submitter->sendForm($form);
+                        break;
+                        case 1:
+                            $manageForm = new ManageGangForm();
+                            $form = $manageForm->load($submitter);
+                            $submitter->sendForm($form);
+                            break;
+                        case 2:
+                            $gangForm = new AdministrativeGangForm();
+                            $form = $gangForm->load($submitter);
+                            $submitter->sendForm($form);
+                            break;
+                }
              
             },
             function (Player $submitter): void {

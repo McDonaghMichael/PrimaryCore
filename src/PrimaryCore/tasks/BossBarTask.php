@@ -9,6 +9,7 @@ use pocketmine\player\Player;
 use PrimaryCore\Main;
 use xenialdan\apibossbar\BossBar;
 use PrimaryCore\database\UserManager;
+use pocketmine\utils\TextFormat as TF;
 
 class BossBarTask extends Task
 {
@@ -16,8 +17,10 @@ class BossBarTask extends Task
     private $currentIndex;
 
     private array $messages = [
-        "3ewfd", 
-        "£EWFDF"
+        TF::BOLD . TF::RED . "STORE " . TF::DARK_GRAY . ">> " . TF::GOLD . "Store.ReactiveMC.Net", 
+        TF::BOLD . TF::GREEN . "VOTE " . TF::DARK_GRAY . ">> " . TF::YELLOW . "Vote.ReactiveMC.Net",
+        TF::BOLD . TF::DARK_BLUE . "DISCORD " . TF::DARK_GRAY . ">> " . TF::AQUA . "Vote.ReactiveMC.Net",
+        TF::BOLD . TF::LIGHT_PURPLE . "VOTE " . TF::DARK_GRAY . ">> " . TF::DARK_PURPLE . "Vote.ReactiveMC.Net",
     ];
 
     public function __construct()
@@ -58,7 +61,7 @@ class BossBarTask extends Task
                     
                     
                     if(Main::getInstance()->getUserManager()->getPlayerMineRank($player->getName()) !== null){
-                        $bar->setSubTitle(Main::getInstance()->getUserManager()->rankNumberToLetter(Main::getInstance()->getUserManager()->getPlayerMineRank($player->getName())) . " -> " . Main::getInstance()->getUserManager()->rankNumberToLetter($nextRank) . " [" . $rankUpCost . "]");
+                        $bar->setSubTitle(TF::AQUA . Main::getInstance()->getUserManager()->rankNumberToLetter(Main::getInstance()->getUserManager()->getPlayerMineRank($player->getName())) . TF::GRAY . " -> " . TF::AQUA . Main::getInstance()->getUserManager()->rankNumberToLetter($nextRank) . TF::GRAY . " [" . TF::BOLD . TF::GOLD . $rankUpCost . TF::RESET . TF::GRAY . "]" . TF::RESET . TF::DARK_GRAY . " | " . TF::AQUA . "Use /rankup");
                     }
                     
                 }

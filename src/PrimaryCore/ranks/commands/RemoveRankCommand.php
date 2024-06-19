@@ -31,9 +31,11 @@ class RemoveRankCommand extends Command
 		if (isset($args[1])) {
 			$count = $args[1];
         Main::getInstance()->getRankManager()->removeRankFromUser($target, $count);
+        Main::getInstance()->getRankManager()->loadPermissions($target);
+
 
 		} else {
-			$this->sendUsage();
+		
 			return;
 		}
 

@@ -9,6 +9,7 @@ use PrimaryCore\economy\commands\RemoveCoinsCommand;
 use PrimaryCore\economy\commands\ResetCoinsCommand;
 use PrimaryCore\economy\commands\SetCoinsCommand;
 use PrimaryCore\economy\commands\TopCoinsCommand;
+use PrimaryCore\economy\commands\ShopCommand;
 use pocketmine\Player;
 use PrimaryCore\Main;
 
@@ -27,6 +28,7 @@ class EconomyManager {
             new ResetCoinsCommand("resetcoins", "Permet d'aller au spawn", "/coins"),
             new SetCoinsCommand("setcoins", "Permet d'aller au spawn", "/coins"),
             new TopCoinsCommand("topcoins", "Permet d'aller au spawn", "/coins"),
+            new ShopCommand("shop", "Permet d'aller au spawn", "/coins"),
         ]);
     }
 

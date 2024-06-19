@@ -16,6 +16,7 @@ use PrimaryCore\economy\EconomyManager;
 use PrimaryCore\gangs\GangManager;
 use PrimaryCore\tasks\ScoreboardTask;
 use PrimaryCore\tasks\BroadcastTask;
+use PrimaryCore\tasks\MOTDTask;
 use PrimaryCore\tasks\BossBarTask;
 use PrimaryCore\mines\MinesManager;
 use xenialdan\apibossbar\BossBar;
@@ -126,9 +127,10 @@ class Main extends PluginBase implements Listener {
     }
 
     public function loadTasks(): void {
-        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BroadcastTask(), 20, 20);
-        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new ScoreboardTask(), 20, 20);
-        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BossBarTask(), 20, 20);
+        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BroadcastTask(), 120, 20);
+        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new ScoreboardTask(), 60, 20);
+        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new BossBarTask(), 90, 20);
+        Main::getInstance()->getScheduler()->scheduleDelayedRepeatingTask(new MOTDTask(), 90, 20);
 
 
     }
