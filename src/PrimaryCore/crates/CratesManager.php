@@ -5,6 +5,10 @@ namespace PrimaryCore\crates;
 use pocketmine\math\Vector3;
 use PrimaryCore\Main;
 use PrimaryCore\crates\commands\CratesCommand;
+use PrimaryCore\utils\FloatingTextAPI;
+use pocketmine\world\Position;
+use pocketmine\world\World;
+use pocketmine\player\Player;
 
 class CratesManager {
 
@@ -21,6 +25,7 @@ class CratesManager {
         Main::getInstance()->getServer()->getCommandMap()->registerAll("PrimaryCore", [
             new CratesCommand("crates", "Permet d'aller au spawn", "/spawn"),
         ]);
+
         $this->addCrate(1, "Test", "world", new Vector3(100, 100, 100));
     }
 
@@ -47,5 +52,14 @@ class CratesManager {
 
     public function clearAllCrates(): void {
         $this->crates = [];
+    }
+
+    public function updateCrateText(Player $player){
+        foreach (Main::getInstance()->getServer()->getOnlinePlayers() as $player) {
+            if ($player instanceof Player) {
+            $message = str_replace("{count}", Main::getInstance()->getCratesManager()->getKeyManager()->getSpecificKeyCount($player->getName(), "Test"), "You have {count} keys");
+            FloatingTextAPI::update($player, "Test", $message);
+        }
+    }
     }
 }

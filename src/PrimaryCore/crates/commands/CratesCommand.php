@@ -32,7 +32,7 @@ class CratesCommand extends Command
 
         $subCommand = strtolower(array_shift($args));
         $playerName = array_shift($args);
-        $keyType = strtolower(array_shift($args));
+        $keyType = array_shift($args);
         $amount = (int) array_shift($args);
 
         $player = Main::getInstance()->getServer()->getPlayerExact($playerName);
