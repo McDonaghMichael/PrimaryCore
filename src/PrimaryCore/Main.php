@@ -12,6 +12,7 @@ use PrimaryCore\kits\KitsManager;
 use PrimaryCore\utils\translate\TranslateManager;
 use PrimaryCore\database\DatabaseManager;
 use PrimaryCore\database\UserManager;
+use PrimaryCore\crates\CratesManager;
 use PrimaryCore\economy\EconomyManager;
 use PrimaryCore\gangs\GangManager;
 use PrimaryCore\tasks\ScoreboardTask;
@@ -20,6 +21,7 @@ use PrimaryCore\tasks\MOTDTask;
 use PrimaryCore\tasks\BossBarTask;
 use PrimaryCore\mines\MinesManager;
 use xenialdan\apibossbar\BossBar;
+
 class Main extends PluginBase implements Listener {
 
     /** @var self */
@@ -51,6 +53,8 @@ class Main extends PluginBase implements Listener {
     /** @var UserManager */
     private $userManager;
 
+    private $cratesManager;
+
     private $economyManager;
 
     private $minesManager;
@@ -74,6 +78,7 @@ class Main extends PluginBase implements Listener {
         $this->economyManager = new EconomyManager();
         $this->userManager = new UserManager($this->databaseManager);
         $this->minesManager = new MinesManager();
+        $this->cratesManager = new CratesManager();
         $this->gangManager = new GangManager();
         $this->loadTasks();
     }
@@ -120,6 +125,10 @@ class Main extends PluginBase implements Listener {
 
     public function getMinesManager(): MinesManager {
         return $this->minesManager;
+    }
+
+    public function getCratesManager(): CratesManager {
+        return $this->cratesManager;
     }
 
     public function getGangManager(): GangManager {

@@ -96,7 +96,6 @@ class RankManager {
 
     public function addRank(Rank $rank): void {
         $this->ranks[$rank->getId()] = $rank;
-        Main::getInstance()->getLogger()->error($rank->getChatFormat());
     }
 
     public function getRankById(int $id): ?Rank {
