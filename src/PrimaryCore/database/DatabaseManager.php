@@ -59,6 +59,44 @@ class DatabaseManager {
             leader TEXT
         )");
 
+        $this->db->exec("CREATE TABLE IF NOT EXISTS temporary_bans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            length INTEGER NOT NULL,
+            time_since_banned INTEGER NOT NULL,
+            reason TEXT,
+            banned_by TEXT
+        )");
+
+        $this->db->exec("CREATE TABLE IF NOT EXISTS permanent_bans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            time_since_banned INTEGER NOT NULL, 
+            reason TEXT,  
+            banned_by TEXT
+        )");
+
+$this->db->exec("CREATE TABLE IF NOT EXISTS permanent_mutes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    time_since_muted INTEGER NOT NULL,
+    reason TEXT,
+    muted_by TEXT
+)");
+
+
+$this->db->exec("CREATE TABLE IF NOT EXISTS temporary_mutes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    length INTEGER NOT NULL,
+    time_since_muted INTEGER NOT NULL,
+    reason TEXT,
+    muted_by TEXT
+)");
+
+
+
+
     }
 
     

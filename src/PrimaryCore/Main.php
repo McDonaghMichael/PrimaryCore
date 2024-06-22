@@ -70,8 +70,8 @@ class Main extends PluginBase implements Listener {
         self::$bar = new BossBar();
         $this->databaseManager = new DatabaseManager($dbPath);
         $this->commandManager = new CommandManager($this);
-        $this->listenerManager = new ListenerManager($this);
-        $this->staffManager = new StaffManager($this);
+        
+        
         $this->rankManager = new RankManager($this);
         $this->translateManager = new TranslateManager();
         $this->kitsManager = new KitsManager();
@@ -80,6 +80,8 @@ class Main extends PluginBase implements Listener {
         $this->minesManager = new MinesManager();
         $this->cratesManager = new CratesManager();
         $this->gangManager = new GangManager();
+        $this->staffManager = new StaffManager($this);
+        $this->listenerManager = new ListenerManager($this);
         $this->loadTasks();
     }
 
